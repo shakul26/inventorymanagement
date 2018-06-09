@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"  
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:context="http://www.springframework.org/schema/context"  
+xmlns:tx="http://www.springframework.org/schema/tx"
+xmlns:mvc="http://www.springframework.org/schema/mvc"
+xmlns:task="http://www.springframework.org/schema/task"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd 
+http://www.springframework.org/schema/context 
+http://www.springframework.org/schema/context/spring-context.xsd
+http://www.springframework.org/schema/mvc
+http://www.springframework.org/schema/mvc/spring-mvc.xsd 
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+http://www.springframework.org/schema/task
+http://www.springframework.org/schema/task/spring-task.xsd"> 
+
+    <context:component-scan base-package="com.im" />
+	<context:property-placeholder location="classpath:resources/database.properties" />
+   	<!-- context:annotation-config/ --> 
+	<!-- tx:annotation-driven/ -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	<mvc:annotation-driven/>
+	<task:annotation-driven/>
+	
+	<mvc:resources mapping="/resources/**" location="/resources/"/>
+	
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="order" value="1"></property>
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+
+ 	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+ 
+  	<bean class="com.mchange.v2.c3p0.ComboPooledDataSource" id="dataSource"  destroy-method="close">
+        <property name="driverClass" value="${database.driver}"></property> 
+		<property name="jdbcUrl" value="${database.url}"></property> 
+		<property name="user" value="${database.user}"></property> 
+		<property name="password" value="${database.password}"></property>
+		
+		<property name="acquireIncrement" value="10" />
+        	<property name="minPoolSize" value="10" />
+        	<property name="maxPoolSize" value="300" />
+        	<property name="maxIdleTime" value="60" />
+        	<property name="maxStatements" value="20" />
+		<property name="acquireRetryAttempts" value="60"/>
+		<property name="acquireRetryDelay" value="1000"/>
+		<property name="breakAfterAcquireFailure" value="false"></property> 
+		
+	       
+	</bean>
+	
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.cglib.use_reflection_optimizer">false</prop>
+				<prop key="hibernate.jdbc.batch_size">10</prop>
+				<prop key="hibernate.c3p0.timeout">120</prop>
+				<prop key="hibernate.c3p0.timeout">600</prop>
+				<prop key="hibernate.c3p0.maxIdleTimeExcessConnections">300</prop>
+				<prop key="hibernate.c3p0.validate">false</prop>
+				<prop key="hibernate.c3p0.idle_test_period">30</prop>
+				<prop key="hibernate.c3p0.automaticTestTable">conTestTable</prop>
+				<prop key="cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
+				<prop key="transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop> 
+								
+			</props>
+		</property> 
+	<property name="mappingResources">
+		<list>
+			<!-- Add Hibernate file -->
+			<value>resources/hibernate/product.hbm.xml</value>
+		</list>	  
+	</property>	
+	</bean>
+	
+	  
+</beans>
